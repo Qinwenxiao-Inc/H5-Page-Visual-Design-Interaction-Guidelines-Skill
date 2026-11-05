@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="DmUUUR1Viv63x4csW1528j">
+<head data-page-node-id="8ja4M6v6DFR8eSyM0EBFGm">
+<meta charset="UTF-8" data-page-node-id="2b8kuV4uXevcKTXjW8ny5G">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="Rj2UeoioAm0cv0p5B7KyfU">
+<title>欢语派对 · 每日任务中心 H5 原型演示</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  background:#EDEDF2; min-height:100vh; padding:32px 16px;
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  display:flex; flex-direction:column; align-items:center; gap:20px;
+}
+.page-title { color:#2C2C2A; font-size:15px; font-weight:500; letter-spacing:1px; }
+.stage { display:flex; gap:40px; flex-wrap:wrap; justify-content:center; }
+.phone {
+  width:320px; height:640px; background:#16112E; border-radius:32px;
+  border:3px solid #322A5E; overflow:hidden; position:relative;
+  display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(20,10,50,.28);
+}
+.phone-label { color:#5F5E5A; font-size:12px; text-align:center; margin-top:10px; }
+.phone-wrap { display:flex; flex-direction:column; align-items:center; }
+.statusbar {
+  height:26px; background:linear-gradient(180deg,#2A2159,#1B1540);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 14px; color:#C9C3EF; font-size:11px; flex:none;
+}
+.page-head {
+  background:linear-gradient(180deg,#2A2159,#1B1540); padding:6px 14px 12px;
+  display:flex; align-items:center; justify-content:space-between; flex:none;
+}
+.back { color:#C9C3EF; font-size:18px; width:24px; cursor:pointer; }
+.head-title { color:#FFFFFF; font-size:15px; font-weight:500; }
+.rule-btn {
+  color:#C9C3EF; font-size:11px; border:.5px solid #6A5FB0;
+  border-radius:10px; padding:3px 9px; background:none; cursor:pointer;
+}
+.point-bar {
+  margin:0 12px; background:linear-gradient(90deg,#4B3A9E,#6B4FC9);
+  border-radius:12px; padding:10px 14px; display:flex;
+  align-items:center; justify-content:space-between; flex:none; margin-top:8px;
+  border:.5px solid #7A68D8;
+}
+.point-label { color:#D8D2FF; font-size:11px; }
+.point-num { color:#FFD75E; font-size:19px; font-weight:500; margin-top:2px; }
+.point-record {
+  color:#D8D2FF; font-size:11px; background:rgba(255,255,255,.14);
+  border:none; border-radius:10px; padding:5px 10px; cursor:pointer;
+}
+.point-tip {
+  margin:8px 12px 0; background:rgba(255,215,94,.14); border-radius:8px;
+  padding:6px 10px; color:#FFD75E; font-size:10px; flex:none;
+}
+.tabs { display:flex; margin:10px 12px 0; gap:6px; flex:none; }
+.tab {
+  flex:1; padding:7px 0; border:none; border-radius:9px 9px 0 0;
+  background:rgba(255,255,255,.08); color:#A79FD8; font-size:11px;
+  cursor:pointer; position:relative; font-family:inherit;
+}
+.tab.active { background:#FFFFFF; color:#2A2159; font-weight:500; }
+.tab .dot {
+  position:absolute; top:4px; right:8px; width:6px; height:6px;
+  border-radius:50%; background:#FF5A5A;
+}
+.body { flex:1; overflow-y:auto; background:#FFFFFF; }
+.body::-webkit-scrollbar { width:0; }
+.pane { display:none; padding:12px 12px 20px; }
+.pane.active { display:block; }
+
+.cal { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+.cal-head { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:6px; }
+.cal-head span { text-align:center; color:#8A82B8; font-size:10px; }
+.cell {
+  aspect-ratio:1/1.05; border-radius:8px; background:#F3F1FA;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:1px; font-size:10px; color:#6B6494; cursor:pointer; border:.5px solid transparent;
+}
+.cell.blank { background:transparent; cursor:default; }
+.cell.signed { background:linear-gradient(180deg,#7A68D8,#5B49B8); color:#fff; }
+.cell.makeup { background:#FFF4D6; color:#96650F; border:.5px dashed #EFB33C; }
+.cell.today { border:1.5px solid #5B49B8; color:#3B3270; }
+.cell.future { background:#FAFAFE; color:#B7B2D6; }
+.cell .n { font-size:12px; font-weight:500; }
+.cell .p { font-size:8px; opacity:.85; }
+.cell .mk { font-size:8px; }
+.stages { display:flex; justify-content:space-between; margin-top:14px; gap:6px; }
+.stage-item {
+  flex:1; background:#F3F1FA; border-radius:8px; padding:7px 4px;
+  text-align:center; font-size:9px; color:#8A82B8;
+}
+.stage-item .t { font-size:11px; color:#5B49B8; font-weight:500; margin-bottom:2px; }
+.stage-item.done { background:#EAF3DE; }
+.stage-item.done .t { color:#3B6D11; }
+.sign-btn {
+  width:100%; margin-top:14px; padding:11px 0; border:none; border-radius:22px;
+  background:linear-gradient(90deg,#7A68D8,#5B49B8); color:#fff;
+  font-size:13px; font-weight:500; cursor:pointer; font-family:inherit;
+}
+.sign-btn.grey { background:#DDD9EF; color:#9189B8; cursor:default; }
+.sub-title { font-size:12px; color:#3B3270; font-weight:500; margin:16px 0 8px; }
+
+.task {
+  display:flex; align-items:center; gap:10px; background:#F3F1FA;
+  border-radius:10px; padding:10px; margin-bottom:8px;
+}
+.task-info { flex:1; min-width:0; }
+.task-name { font-size:12px; color:#2A2159; font-weight:500; }
+.task-prog { font-size:10px; color:#8A82B8; margin:3px 0 5px; }
+.bar { height:4px; background:#E2DEEF; border-radius:2px; overflow:hidden; }
+.bar-in { height:100%; background:linear-gradient(90deg,#7A68D8,#4B3A9E); border-radius:2px; }
+.bar-in.full { background:#97C459; }
+.task-pt { font-size:11px; color:#96650F; font-weight:500; flex:none; }
+.task-btn {
+  border:none; border-radius:12px; padding:5px 10px; font-size:10px;
+  background:linear-gradient(90deg,#7A68D8,#5B49B8); color:#fff;
+  cursor:pointer; flex:none; font-family:inherit;
+}
+.task-btn.done { background:transparent; color:#97C459; border:.5px solid #97C459; cursor:default; }
+.tag-type {
+  display:inline-block; font-size:9px; color:#6B6494;
+  background:#E6E1FA; border-radius:4px; padding:1px 4px; margin-left:4px;
+}
+
+.light-top {
+  background:#F3F1FA; border-radius:10px; padding:8px 10px;
+  font-size:10px; color:#5B49B8; margin-bottom:10px; text-align:center;
+}
+.light-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.gift {
+  background:#F9F8FD; border:.5px solid #E2DEEF; border-radius:10px;
+  padding:10px 8px; text-align:center;
+}
+.gift.on { background:#EAF3DE; border-color:#97C459; }
+.gift-icon {
+  width:40px; height:40px; border-radius:50%; margin:0 auto 6px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:13px; font-weight:500;
+}
+.gift.off .gift-icon { background:#C4BEE0 !important; }
+.gift-name { font-size:11px; color:#2A2159; }
+.gift-rew { font-size:9px; color:#96650F; margin-top:3px; }
+.gift-state { font-size:9px; color:#8A82B8; margin-top:5px; }
+.gift.on .gift-state { color:#3B6D11; }
+.allon {
+  margin-top:10px; background:#EAF3DE; border-radius:10px; padding:8px;
+  text-align:center; font-size:11px; color:#3B6D11;
+}
+
+.shop-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.goods {
+  background:#F9F8FD; border:.5px solid #E2DEEF; border-radius:10px;
+  padding:10px 8px; text-align:center;
+}
+.goods-icon {
+  width:44px; height:44px; border-radius:10px; margin:0 auto 6px;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px;
+}
+.goods-name { font-size:11px; color:#2A2159; }
+.goods-price { font-size:10px; color:#96650F; margin-top:3px; }
+.goods-stock { font-size:9px; color:#8A82B8; margin-top:2px; }
+.goods-btn {
+  width:100%; margin-top:6px; border:none; border-radius:10px; padding:4px 0;
+  font-size:10px; background:linear-gradient(90deg,#7A68D8,#5B49B8); color:#fff;
+  cursor:pointer; font-family:inherit;
+}
+.goods-btn.grey { background:#DDD9EF; color:#9189B8; cursor:default; }
+.refresh-bar { display:flex; justify-content:flex-end; margin-top:10px; }
+.refresh-btn {
+  border:none; border-radius:14px; padding:6px 14px; font-size:11px;
+  background:#FFF4D6; color:#96650F; cursor:pointer; font-family:inherit;
+}
+.refresh-btn.grey { background:#F0EEF7; color:#A79FD8; cursor:default; }
+
+.mask {
+  position:absolute; inset:0; background:rgba(12,8,32,.6);
+  display:none; align-items:center; justify-content:center; z-index:20; padding:24px;
+}
+.mask.show { display:flex; }
+.modal {
+  background:#fff; border-radius:16px; width:100%; padding:20px 16px 16px; text-align:center;
+}
+.modal-title { font-size:14px; color:#2A2159; font-weight:500; }
+.modal-icon {
+  width:56px; height:56px; border-radius:50%; margin:14px auto 8px;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#FFD75E,#F5A623); color:#fff; font-size:15px; font-weight:500;
+}
+.modal-desc { font-size:11px; color:#8A82B8; line-height:1.7; }
+.modal-sub { font-size:11px; color:#5B49B8; margin-top:8px; }
+.modal-btns { display:flex; gap:8px; margin-top:16px; }
+.mbtn {
+  flex:1; border:none; border-radius:20px; padding:9px 0; font-size:12px;
+  cursor:pointer; font-family:inherit;
+}
+.mbtn.primary { background:linear-gradient(90deg,#7A68D8,#5B49B8); color:#fff; }
+.mbtn.plain { background:#F0EEF7; color:#6B6494; }
+.toast {
+  position:absolute; left:50%; top:52%; transform:translateX(-50%);
+  background:rgba(12,8,32,.86); color:#fff; font-size:11px;
+  padding:8px 16px; border-radius:16px; z-index:30; opacity:0;
+  transition:opacity .2s; pointer-events:none; white-space:nowrap;
+}
+.toast.show { opacity:1; }
+.page-note { color:#888780; font-size:12px; max-width:640px; text-align:center; line-height:1.8; }
+</style>
+</head>
+<body data-page-node-id="mhWHkHeaNECdeCJ4lkXqUi">
+
+<div data-page-node-id="abLy1o2vPgnxdHyO40DxEM">
+  <div class="page-title" data-page-node-id="AfD5haSUeRLEyeIXadinFn">欢语派对 · 每日任务中心</div>
+  <p class="page-note" data-page-node-id="TMpNzdK0U3eTPDDFfj46PQ">H5 原型演示：四个板块可点击切换，签到、补签、兑换、刷新均可交互。左为功能主页面，右为关键弹窗与状态态演示。</p>
+</div>
+
+<div class="stage" data-page-node-id="sXYoCuTrtrH73kVcSf1xZy">
+  <div class="phone-wrap" data-page-node-id="4UMuwrQhjpYiqGEIBTN3bD">
+    <div class="phone" id="phone" data-page-node-id="kDoM03vqn7sqgO287Bbzah">
+      <div class="statusbar" data-page-node-id="weMJXYOlyzGijCl38iIzsQ"><span data-page-node-id="GiOovspDfNcr3cBr0tgxPM">9:41</span><span data-page-node-id="NUXohhiL44dMasUTzLuf8s">欢语派对</span></div>
+
+      <div class="page-head" data-page-node-id="MZtUhu6G8g9ye4neVGzG6s">
+        <span class="back" data-page-node-id="d3ybb7MwjRWMeeLqFYFO56">&lsaquo;</span>
+        <span class="head-title" data-page-node-id="5fzKFH0kqBAaENbLEFbNyd">每日任务中心</span>
+        <button class="rule-btn" onclick="showRule()" data-page-node-id="WPnrE0HLo3VcODbHH2CBQB">规则</button>
+      </div>
+
+      <div class="point-bar" data-page-node-id="c1eVqpeNDRECaBPBZzGGBK">
+        <div data-page-node-id="k5l8TfKBL7MUkzXb4cAmYD">
+          <div class="point-label" data-page-node-id="MtnaJCwVQPGvNFvSijEph2">我的积分</div>
+          <div class="point-num" id="pointNum" data-page-node-id="Tg3mMKocDA8huRdxpUYxr0">236</div>
+        </div>
+        <button class="point-record" onclick="toast('跳转积分记录页')" data-page-node-id="c9gaD0ac7TS33KCB0AvPLX">积分记录</button>
+      </div>
+
+      <div class="point-tip" data-page-node-id="7VIuBMAKSSoNwkpEyDz9TB">本月积分将于 9 月 30 日 23:59:59 清零</div>
+
+      <div class="tabs" data-page-node-id="0tgxeeM7KF8JjiCaI15Yub">
+        <button class="tab active" data-p="sign" onclick="switchTab('sign')" data-page-node-id="pAguLrQJsErH2Nr4cjFhz7">每日签到</button>
+        <button class="tab" data-p="task" onclick="switchTab('task')" data-page-node-id="K2u4f5W2PtEjNCCq7FLmKn">每日任务<span class="dot" data-page-node-id="drtI17xptRESEJ7vAZgCAb"></span></button>
+        <button class="tab" data-p="light" onclick="switchTab('light')" data-page-node-id="rZlYaGMHkPNej7EjrOC37P">每周点亮</button>
+        <button class="tab" data-p="shop" onclick="switchTab('shop')" data-page-node-id="bqx4eYoCYkMBkRe5zo4tDT">兑换商店</button>
+      </div>
+
+      <div class="body" data-page-node-id="mXrqoGyUNkX4KbBmBbNprl">
+        <div class="pane active" id="pane-sign" data-page-node-id="BG9XzCUaWRiAVXD5v55df6">
+          <div class="cal-head" data-page-node-id="r1MCEAUvmCA6tm32AVkNA4">
+            <span data-page-node-id="HY4HnwFaqxgGimdbaiDfRU">日</span><span data-page-node-id="xFSUEQDcLSXUBvcg3ia1pj">一</span><span data-page-node-id="h6lTDNrUydhNi3aG5nfpCb">二</span><span data-page-node-id="abAGRVf2n6rq0Bnn9xUJZx">三</span><span data-page-node-id="ufRSezCpEreH8VglUd9ZCv">四</span><span data-page-node-id="hAqrngP6m0H2Cqt2AFUqvO">五</span><span data-page-node-id="B0q5E2VCxqB9FnIBM44plc">六</span>
+          </div>
+          <div class="cal" id="cal" data-page-node-id="h1uRWhup6CMOz5YBEqf99C"></div>
+          <div class="stages" data-page-node-id="H4jWPriu4vl8XRLi7zAKm4">
+            <div class="stage-item done" data-page-node-id="sK4JVU1SkCLY1CHCM51yFt"><div class="t" data-page-node-id="4efHIgMAQj4VwhtfpysuQ2">7 天</div>已达成</div>
+            <div class="stage-item done" data-page-node-id="9p1hEFcWZilkWXVusaHo1G"><div class="t" data-page-node-id="M7KtFNGwysdzM6fIQHy5tB">14 天</div>已达成</div>
+            <div class="stage-item" data-page-node-id="F0IwZf5KymYJDtE4FqCrOq"><div class="t" data-page-node-id="jdqgaD87mPxJDOUsXJhkSY">21 天</div>累计 18 天</div>
+            <div class="stage-item" data-page-node-id="OOP2sHR8FHyxEHBPrd1l9i"><div class="t" data-page-node-id="EtUkk9EQ7XwZgpXkINNrcF">全勤</div>当月全签到</div>
+          </div>
+          <button class="sign-btn" id="signBtn" onclick="doSign()" data-page-node-id="MJTCjBSK423hyWi946TBRh">今日打卡签到</button>
+        </div>
+
+        <div class="pane" id="pane-task" data-page-node-id="nMOyb4Igz0ULAAGOH9GVBQ">
+          <div class="light-top" id="taskTop" data-page-node-id="kP7JJtdGeR7n1BZu5jAO1Z">每日 0:00 重置进度</div>
+          <div id="taskList" data-page-node-id="XE5pLaGQ3ZQufqJtZycR1T"></div>
+        </div>
+
+        <div class="pane" id="pane-light" data-page-node-id="hj0XSgcLXgerS7hNRSXfvl">
+          <div class="light-top" data-page-node-id="VZOYYmwQ2SVqAFXdlG1UxM">本周剩余 3 天 06 时 12 分 · 送出或收到皆可点亮</div>
+          <div class="light-grid" id="lightGrid" data-page-node-id="DmiGXjFzb1LR0B7L8VVFBs"></div>
+          <div class="allon" id="allon" style="display:none" data-page-node-id="cCdXc75yGRocBDKf1I1gCM">本周已全部点亮</div>
+        </div>
+
+        <div class="pane" id="pane-shop" data-page-node-id="uLXoJEWMY07EfiYBgHMe8u">
+          <div class="light-top" data-page-node-id="FAOVQQj0mt1Vn59tSVP9Jk">商品池每月 1 日 0:00 轮换 · 手动刷新消耗 1 积分</div>
+          <div class="shop-grid" id="shopGrid" data-page-node-id="NIa2tXvulVV0zSE8WfEH1o"></div>
+          <div class="refresh-bar" data-page-node-id="KYPWFA3XkmUslnhgSdYUuD">
+            <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()" data-page-node-id="4JGR7nIKTAYmnquxPgdkSW">1 积分刷新</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mask" id="mask" onclick="maskClick(event)" data-page-node-id="8ZkY9S3oueukf71CiIKKOu">
+        <div class="modal" id="modal" data-page-node-id="w3v0SKaRKdnIhgJA4Jbt80"></div>
+      </div>
+      <div class="toast" id="toast" data-page-node-id="TPy73NbEVF9jRg1Z7AsN6w"></div>
+    </div>
+    <div class="phone-label" data-page-node-id="csDG1TwxBa0YrAucWVNYTA">主功能页</div>
+  </div>
+</div>
+
+<script>
+var point = 236;
+var signedToday = false;
+
+var tasks = [
+  {id:1, type:'基础', name:'每日登录 APP', cur:1, max:1, pt:1, unit:'次'},
+  {id:2, type:'基础', name:'浏览语音厅 15 分钟', cur:15, max:15, pt:1, unit:'分钟'},
+  {id:3, type:'基础', name:'发送公屏消息 5 条', cur:5, max:5, pt:1, unit:'条'},
+  {id:4, type:'互动', name:'上麦时长 10 分钟', cur:4, max:10, pt:1, unit:'分钟'},
+  {id:5, type:'互动', name:'收到礼物 10 钻', cur:10, max:10, pt:1, unit:'钻'},
+  {id:6, type:'消费', name:'送出礼物累计 100 钻', cur:100, max:100, pt:1, unit:'钻'},
+  {id:7, type:'消费', name:'送出礼物累计 500 钻', cur:320, max:500, pt:2, unit:'钻'},
+  {id:8, type:'消费', name:'送出礼物累计 2000 钻', cur:320, max:2000, pt:3, unit:'钻'}
+];
+
+var gifts = [
+  {id:101, name:'星光玫瑰', color:'#D4537E', rew:'+5 积分', on:true, btn:'已获得'},
+  {id:102, name:'月牙弯弯', color:'#BA7517', rew:'限定头像框 3 天', on:true, btn:'已获得'},
+  {id:103, name:'心动气球', color:'#378ADD', rew:'+10 积分', on:false, btn:'未点亮'},
+  {id:104, name:'星河碎片', color:'#7F77DD', rew:'座驾 7 天', on:false, btn:'未点亮'}
+];
+
+var goods = [
+  {id:201, name:'鲜花沙漏', price:1, icon:'#D4537E', stock:'每日限兑 3 次', type:'礼物', sold:false, limited:false},
+  {id:202, name:'限定头像框', price:5, icon:'#7F77DD', stock:'剩 128 件', type:'装扮', sold:false, limited:true},
+  {id:203, name:'房间背景', price:5, icon:'#1D9E75', stock:'剩 64 件', type:'装扮', sold:false, limited:true},
+  {id:204, name:'资料卡背景', price:15, icon:'#BA7517', stock:'剩 30 件', type:'装扮', sold:false, limited:true},
+  {id:205, name:'C 级靓号卡', price:50, icon:'#378ADD', stock:'剩 6 件', type:'道具', sold:false, limited:true},
+  {id:206, name:'装扮套装', price:80, icon:'#D4537E', stock:'剩 0 件', type:'装扮', sold:true, limited:true}
+];
+
+function initCal() {
+  var signed = [1,2,4,5,6,8,11,12,13,15,16,18,20,22,23,25,26,27];
+  var makeup = [3,7];
+  var html = '';
+  for (var i = 0; i < 2; i++) html += '<div class="cell blank"></div>';
+  for (var d = 1; d <= 30; d++) {
+    var cls = 'cell';
+    if (signed.indexOf(d) > -1) cls += ' signed';
+    else if (makeup.indexOf(d) > -1) cls += ' makeup';
+    else if (d === 9) cls += ' today';
+    else if (d < 9) cls += ' makeup';
+    else cls += ' future';
+    var mid = '';
+    if (signed.indexOf(d) > -1) mid = '<span class="p">+10</span>';
+    else if (makeup.indexOf(d) > -1 || d < 9) mid = '<span class="mk">待补签</span>';
+    else mid = '<span class="p">+10</span>';
+    html += '<div class="' + cls + '" data-d="' + d + '" onclick="cellClick(' + d + ')">'
+          + '<span class="n">' + d + '</span>' + mid + '</div>';
+  }
+  document.getElementById('cal').innerHTML = html;
+}
+
+function cellClick(d) {
+  if (d > 9) { toast('暂不支持提前签到'); return; }
+  var el = document.querySelector('.cell[data-d="' + d + '"]');
+  if (el.classList.contains('signed')) { return; }
+  if (d === 9) { doSign(); return; }
+  openMakeup(d);
+}
+
+function doSign() {
+  if (signedToday) { toast('今日已签到，请明日再来'); return; }
+  signedToday = true;
+  point += 10;
+  document.getElementById('pointNum').innerText = point;
+  var el = document.querySelector('.cell[data-d="9"]');
+  el.classList.remove('today');
+  el.classList.add('signed');
+  el.innerHTML = '<span class="n">9</span><span class="p">+10</span>';
+  var btn = document.getElementById('signBtn');
+  btn.className = 'sign-btn grey';
+  btn.innerText = '明日再来';
+  openSign();
+}
+
+function openSign() {
+  document.getElementById('modal').innerHTML =
+    '<div class="modal-title">恭喜获得签到奖励</div>' +
+    '<div class="modal-icon">+10</div>' +
+    '<div class="modal-sub">积分 × 10</div>' +
+    '<div class="modal-desc">积分可在兑换商店换取好礼</div>' +
+    '<div class="modal-btns">' +
+      '<button class="mbtn plain" data-act="close">开心收下</button>' +
+      '<button class="mbtn primary" data-act="shop">去兑换</button>' +
+    '</div>';
+  showMask();
+}
+
+function openMakeup(d) {
+  var cnt = 1;
+  var cost = cnt === 1 ? 10 : (cnt === 2 ? 20 : 30);
+  document.getElementById('modal').innerHTML =
+    '<div class="modal-title">补签</div>' +
+    '<div class="modal-sub">9 月 ' + d + ' 日</div>' +
+    '<div class="modal-desc">本次补签消耗 ' + cost + ' 钻</div>' +
+    '<div class="modal-btns">' +
+      '<button class="mbtn plain" data-act="close">取消</button>' +
+      '<button class="mbtn primary" data-act="makeup" data-day="' + d + '">确认补签</button>' +
+    '</div>';
+  showMask();
+}
+
+function openConfirm(id) {
+  var g = null;
+  for (var i = 0; i < goods.length; i++) { if (goods[i].id === id) g = goods[i]; }
+  if (!g) return;
+  if (g.sold) { toast('该商品已被抢完'); return; }
+  if (point < g.price) { toast('积分不足'); return; }
+  document.getElementById('modal').innerHTML =
+    '<div class="modal-title">兑换确认</div>' +
+    '<div class="modal-sub">' + g.name + '</div>' +
+    '<div class="modal-desc">确定使用 ' + g.price + ' 积分兑换 ' + g.name + '？</div>' +
+    '<div class="modal-btns">' +
+      '<button class="mbtn plain" data-act="close">取消</button>' +
+      '<button class="mbtn primary" data-act="exchange" data-id="' + id + '">确认兑换</button>' +
+    '</div>';
+  showMask();
+}
+
+function doRefresh() {
+  if (point < 1) { toast('积分不足'); return; }
+  point -= 1;
+  document.getElementById('pointNum').innerText = point;
+  toast('已消耗 1 积分刷新列表');
+}
+
+function showRule() {
+  document.getElementById('modal').innerHTML =
+    '<div class="modal-title">活动规则</div>' +
+    '<div class="modal-desc" style="text-align:left;margin-top:10px">' +
+    '1. 每日签到获得 10 积分，签到日历跟随自然月展示。<br>' +
+    '2. 补签消耗按次序递增：第 1 次 10 钻、第 2 次 20 钻、第 3 次 30 钻，每月最多补签 3 次。<br>' +
+    '3. 每日任务每日 0:00 重置，每日最多获得 11 积分。<br>' +
+    '4. 每周点亮礼物，送出或收到指定礼物即可点亮，奖励可为积分或装扮，每周一 0:00 重置。<br>' +
+    '5. 积分于每月最后一日 23:59:59 清零，请及时兑换。' +
+    '</div>' +
+    '<div class="modal-btns"><button class="mbtn primary" data-act="close">我知道了</button></div>';
+  showMask();
+}
+
+function maskClick(e) {
+  var t = e.target;
+  var act = t.getAttribute && t.getAttribute('data-act');
+  if (act === 'close') { hideMask(); return; }
+  if (act === 'shop') { hideMask(); switchTab('shop'); return; }
+  if (act === 'makeup') {
+    hideMask();
+    point += 10;
+    document.getElementById('pointNum').innerText = point;
+    toast('补签成功，获得 10 积分');
+    return;
+  }
+  if (act === 'exchange') {
+    var id = parseInt(t.getAttribute('data-id'), 10);
+    for (var i = 0; i < goods.length; i++) {
+      if (goods[i].id === id) {
+        point -= goods[i].price;
+        goods[i].sold = goods[i].limited ? goods[i].sold : true;
+      }
+    }
+    hideMask();
+    document.getElementById('pointNum').innerText = point;
+    renderShop();
+    toast('兑换成功，奖励已放入背包');
+    return;
+  }
+  if (t.id === 'mask') hideMask();
+}
+
+function showMask() { document.getElementById('mask').classList.add('show'); }
+function hideMask() { document.getElementById('mask').classList.remove('show'); }
+
+var toastTimer = null;
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.innerText = msg;
+  el.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { el.classList.remove('show'); }, 1600);
+}
+
+function switchTab(p) {
+  var ps = ['sign', 'task', 'light', 'shop'];
+  for (var i = 0; i < ps.length; i++) {
+    document.getElementById('pane-' + ps[i]).classList.toggle('active', ps[i] === p);
+  }
+  var tabs = document.querySelectorAll('.tab');
+  for (var j = 0; j < tabs.length; j++) {
+    tabs[j].classList.toggle('active', tabs[j].getAttribute('data-p') === p);
+  }
+}
+
+function renderTasks() {
+  var html = '';
+  var got = 0;
+  for (var i = 0; i < tasks.length; i++) {
+    var t = tasks[i];
+    var ok = t.cur >= t.max;
+    if (ok) got += t.pt;
+    var pct = Math.min(100, Math.round(t.cur / t.max * 100));
+    var prog = ok ? '已完成' : t.cur + ' / ' + t.max + ' ' + t.unit;
+    html += '<div class="task">' +
+      '<div class="task-info">' +
+        '<div class="task-name">' + t.name + '<span class="tag-type">' + t.type + '类</span></div>' +
+        '<div class="task-prog">进度 ' + prog + '</div>' +
+        '<div class="bar"><div class="bar-in' + (ok ? ' full' : '') + '" style="width:' + pct + '%"></div></div>' +
+      '</div>' +
+      '<div class="task-pt">+' + t.pt + '</div>' +
+      '<button class="task-btn' + (ok ? ' done' : '') + '" onclick="toast(\'跳转对应功能页\')">' + (ok ? '已领取' : '去完成') + '</button>' +
+    '</div>';
+  }
+  document.getElementById('taskList').innerHTML = html;
+  document.getElementById('taskTop').innerText =
+    '每日 0:00 重置进度 · 今日已获 ' + got + ' / 11 积分';
+}
+
+function renderGifts() {
+  var html = '';
+  var allOn = true;
+  for (var i = 0; i < gifts.length; i++) {
+    var g = gifts[i];
+    if (!g.on) allOn = false;
+    html += '<div class="gift ' + (g.on ? 'on' : 'off') + '">' +
+      '<div class="gift-icon" style="background:' + g.color + '">' + g.name.charAt(0) + '</div>' +
+      '<div class="gift-name">' + g.name + '</div>' +
+      '<div class="gift-rew">' + g.rew + '</div>' +
+      '<div class="gift-state">' + (g.on ? '已点亮 · 奖励已到账' : '送出或收到即可点亮') + '</div>' +
+    '</div>';
+  }
+  document.getElementById('lightGrid').innerHTML = html;
+  if (allOn) document.getElementById('allon').style.display = 'block';
+}
+
+function renderShop() {
+  var html = '';
+  for (var i = 0; i < goods.length; i++) {
+    var g = goods[i];
+    var btnCls = 'goods-btn';
+    var btnTxt = '兑换';
+    if (g.sold) { btnCls += ' grey'; btnTxt = '已售罄'; }
+    else if (point < g.price) { btnCls += ' grey'; btnTxt = '积分不足'; }
+    html += '<div class="goods">' +
+      '<div class="goods-icon" style="background:' + g.icon + '">' + g.name.charAt(0) + '</div>' +
+      '<div class="goods-name">' + g.name + '</div>' +
+      '<div class="goods-price">' + g.price + ' 积分</div>' +
+      '<div class="goods-stock">' + g.stock + '</div>' +
+      '<button class="' + btnCls + '" onclick="openConfirm(' + g.id + ')">' + btnTxt + '</button>' +
+    '</div>';
+  }
+  document.getElementById('shopGrid').innerHTML = html;
+  var rb = document.getElementById('refreshBtn');
+  if (point < 1) { rb.className = 'refresh-btn grey'; }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  initCal();
+  renderTasks();
+  renderGifts();
+  renderShop();
+});
+</script>
+</body>
+</html>
